@@ -34,7 +34,7 @@ docker compose up -d
 ### Run API
 
 ```bash
-git clone https://github.com/Sooriyaprasannan/Caresetu-BE.git Caresetu-BE
+git clone https://github.com/Yash111801/Caresetu-BE.git Caresetu-BE
 cd Caresetu-BE
 export JAVA_HOME=…/openjdk@21   # adjust for your machine
 ./mvnw spring-boot:run
