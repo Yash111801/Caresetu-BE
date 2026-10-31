@@ -37,16 +37,23 @@ HTTP Controllers  →  Services  →  Repositories
 
 ## Clinical pathway (API)
 
-Typical happy path:
-
 ```
-ASHA screening → stage CHO
-CHO forward    → stage REVIEW
-MO book        → stage BOOKED
-Hospital attend / tests / oncology / close … (role actions)
+ASHA screening     → CHO
+CHO approve/forward → REVIEW
+MO refer + book     → BOOKED
+HOSP attend         → TESTED          (hospital doctor records visit + orders tests)
+PATH reportTest     → ONCO_REQ | CLOSED   (Diagnostics: POSITIVE → oncology needed)
+MO oncology book    → SPECIALIST
+ONCO consult        → CLOSED (+ optional treatment-start)
 ```
 
-Patient actions are exposed under `/api/v1/patients/{id}/…` (screen, forward, book, attend, report, oncology, consult, close, ack, field-visit, exit, treatment-start, rebook, etc.).
+| Actor | Role code | Key actions |
+|-------|-----------|-------------|
+| Hospital doctor | HOSP | `attend`, `cantserve` on BOOKED |
+| Diagnostics | PATH | `report`, `inconclusive` on TESTED |
+| Specialist | ONCO | `consult` on SPECIALIST; `txstart` when applicable |
+
+Patient actions are under `/api/v1/patients/{id}/…` (screen, approve, refer/book, attend, report, oncology book, consult, close, ack, field-visit, exit, treatment-start, rebook, etc.).
 
 ## Module map
 

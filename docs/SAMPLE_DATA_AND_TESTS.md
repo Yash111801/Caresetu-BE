@@ -87,15 +87,19 @@ Fixed `public_id`s use `22222222-…000N` for reproducible deep links from FE.
 
 ## 4. Working pathway (API behaviour)
 
-### Happy path (create → next)
+### Full path (create → hospital → diagnostics → specialist)
 
-Same flow the FE script validates:
+FE `test:pathway` automates steps 1–3; steps 4–7 are live in API/UI (use seed UHIs below).
 
 | # | Actor | Operation | Resulting `stage` |
 |---|-------|-----------|-------------------|
-| 1 | ASHA | Create screening (patient create + screen) | **CHO** |
-| 2 | CHO | Forward / approve action | **REVIEW** |
-| 3 | MO | Refer + book slot | **BOOKED** (+ booking row, events, messages as configured) |
+| 1 | ASHA | Create screening | **CHO** |
+| 2 | CHO | Forward / approve | **REVIEW** |
+| 3 | MO | Refer + book hospital | **BOOKED** |
+| 4 | **HOSP** (hospital doctor) | `attend` visit | **TESTED** |
+| 5 | **PATH** (Diagnostics) | `reportTest` POSITIVE | **ONCO_REQ** (else CLOSED) |
+| 6 | MO | Oncology book (`obook`) | **SPECIALIST** |
+| 7 | **ONCO** (Specialist) | `consult` | **CLOSED** (+ optional `txstart`) |
 
 ### Action matrix (`WorklistService`)
 
