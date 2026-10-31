@@ -1,0 +1,74 @@
+server:
+  port: 8080
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+
+spring:
+  application:
+    name: caresetu
+  datasource:
+    url: jdbc:mysql://localhost:3307/caresetu?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME:caresetu}
+    password: ${DB_PASSWORD:caresetu}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+caresetu:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:CHANGE_ME_TO_A_LONG_RANDOM_SECRET_AT_LEAST_64_CHARS_FOR_HS256_PROD}
+      access-token-ttl-minutes: 15
+      refresh-token-ttl-days: 7
+    otp:
+      length: 6
+      ttl-minutes: 5
+      max-attempts: 5
+      resend-cooldown-seconds: 30
+      # Demo only — disable in production and use SMS gateway
+      demo-otp-enabled: true
+      demo-otp: "123456"
+    cors:
+      allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:5174,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:5174}
+    rate-limit:
+      auth-requests-per-minute: 10
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+logging:
+  level:
+    root: INFO
+    in.gov.npncd.caresetu: INFO
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{ISO8601} [%thread] %-5level %logger{36} requestId=%X{requestId} - %msg%n"

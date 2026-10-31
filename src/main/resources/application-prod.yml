@@ -1,0 +1,56 @@
+# Production profile — never enable demo OTP
+server:
+  forward-headers-strategy: framework
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: 4
+  jpa:
+    properties:
+      hibernate:
+        format_sql: false
+  flyway:
+    baseline-on-migrate: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+
+caresetu:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      access-token-ttl-minutes: ${JWT_ACCESS_TTL_MIN:15}
+      refresh-token-ttl-days: ${JWT_REFRESH_TTL_DAYS:7}
+    otp:
+      demo-otp-enabled: false
+      ttl-minutes: 5
+      max-attempts: 5
+      resend-cooldown-seconds: 45
+    cors:
+      allowed-origins: ${CORS_ORIGINS}
+    rate-limit:
+      auth-requests-per-minute: ${AUTH_RATE_LIMIT:20}
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+logging:
+  level:
+    root: WARN
+    in.gov.npncd.caresetu: INFO
+  pattern:
+    console: "%d{ISO8601} [%thread] %-5level %logger{36} requestId=%X{requestId} - %msg%n"
